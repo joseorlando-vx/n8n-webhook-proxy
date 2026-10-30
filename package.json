@@ -1,7 +1,7 @@
 {
   "name": "n8n-webhook-proxy",
   "version": "1.0.0",
-  "description": "Proxy de filtro de webhook WhatsApp (Evolution API) para n8n",
+  "description": "Webhook filter proxy from WhatsApp (Evolution API) to n8n",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

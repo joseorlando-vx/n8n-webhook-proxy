@@ -1,48 +1,48 @@
 # n8n-webhook-proxy
 
-Pequeno proxy em Node.js que fica entre a **Evolution API** (WhatsApp) e um **webhook do n8n** e repassa apenas as mensagens de um grupo específico. O restante é descartado antes de chegar ao n8n, evitando execuções desnecessárias do workflow.
+A small Node.js proxy that sits between the **Evolution API** (WhatsApp) and an **n8n webhook** and forwards only the messages from one specific group. Everything else is dropped before it reaches n8n, avoiding unnecessary workflow executions.
 
-## O problema
+## The problem
 
-A Evolution API envia ao webhook **todos** os eventos da instância. Cada evento disparava uma execução no n8n, mesmo quando a mensagem não era do grupo de interesse. Isso gastava execuções do plano e poluía o histórico.
+The Evolution API sends **every** event of an instance to the webhook. Each event triggered an n8n execution, even when the message was not from the group of interest. That used up plan executions and cluttered the execution history.
 
-## A solução
+## The solution
 
-O proxy recebe o webhook, responde `200` imediatamente (para a Evolution API não dar timeout), compara o `remoteJid` com o grupo configurado e só então encaminha o corpo para o n8n.
+The proxy receives the webhook, answers `200` immediately (so the Evolution API does not time out), compares the `remoteJid` with the configured group and only then forwards the body to n8n.
 
 ```
-Evolution API --> proxy (filtra por remoteJid) --> n8n webhook
-                     \--> descarta o restante
+Evolution API --> proxy (filters by remoteJid) --> n8n webhook
+                     \--> drops everything else
 ```
 
 ## Stack
 
 Node.js 18+, Express, Axios.
 
-## Como rodar
+## How to run
 
 ```bash
 npm install
-cp .env.example .env   # preencha GROUP_JID e N8N_WEBHOOK_URL
+cp .env.example .env   # fill in GROUP_JID and N8N_WEBHOOK_URL
 export $(grep -v '^#' .env | xargs)
 npm start
 ```
 
-Aponte o webhook da instância na Evolution API para `POST http://<host>:3000/webhook`.
+Point the instance webhook in the Evolution API to `POST http://<host>:3000/webhook`.
 
-## Variáveis de ambiente
+## Environment variables
 
-| Variável | Descrição |
+| Variable | Description |
 |---|---|
-| `GROUP_JID` | JID do grupo permitido (obrigatória) |
-| `N8N_WEBHOOK_URL` | URL do webhook no n8n (obrigatória) |
-| `PORT` | Porta do servidor (padrão `3000`) |
+| `GROUP_JID` | JID of the allowed group (required) |
+| `N8N_WEBHOOK_URL` | Webhook URL in n8n (required) |
+| `PORT` | Server port (default `3000`) |
 
 ## Endpoints
 
-- `POST /webhook`: recebe eventos da Evolution API
-- `GET /health`: verificação de saúde
+- `POST /webhook`: receives events from the Evolution API
+- `GET /health`: health check
 
-## Licença
+## License
 
 MIT
